@@ -536,9 +536,6 @@ function getSystemPrompt() {
 window.askQuestion = async () => {
   const question = qInput.value.trim();
   if(!question||loading||!user) return;
-  const apiKey = 'AIzaSyAQas5EoY_pNqBHX_rj9odbXi0s2rKihDY';
-  
-  
   loading = true;
   const btn = document.getElementById('askBtn');
   btn.disabled = true;
@@ -548,7 +545,7 @@ window.askQuestion = async () => {
   wrap.style.display = 'block';
   box.innerHTML = `<div class="dots-loader"><span></span><span></span><span></span> &nbsp;Generating answer...</div>`;
   try {
-    const apiKey = 'AIzaSyAQas5EoY_pNqBHX_rj9odbXi0s2rKihDY';
+    const apiKey = 'AIzaSyCf7yguq3ZZOvqszFgHzrtjQK_54VGFnqE';
     const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`, {
       method:"POST",
       headers:{"Content-Type":"application/json"},
