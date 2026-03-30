@@ -349,6 +349,7 @@ textarea::placeholder{color:var(--muted)}
       <div class="vs" id="vs"></div>
       <div class="char-row"><span class="char-info" id="charCount">0 / 600</span></div>
 
+
       <button class="ask-btn" id="askBtn" onclick="askQuestion()">
         <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
         Get AI Answer
@@ -535,6 +536,9 @@ function getSystemPrompt() {
 window.askQuestion = async () => {
   const question = qInput.value.trim();
   if(!question||loading||!user) return;
+  const apiKey = 'AIzaSyAQas5EoY_pNqBHX_rj9odbXi0s2rKihDY';
+  
+  
   loading = true;
   const btn = document.getElementById('askBtn');
   btn.disabled = true;
@@ -544,13 +548,19 @@ window.askQuestion = async () => {
   wrap.style.display = 'block';
   box.innerHTML = `<div class="dots-loader"><span></span><span></span><span></span> &nbsp;Generating answer...</div>`;
   try {
-    const res = await fetch("https://api.anthropic.com/v1/messages", {
+    const apiKey = 'AIzaSyAQas5EoY_pNqBHX_rj9odbXi0s2rKihDY';
+    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
       method:"POST",
-      headers:{"Content-Type":"application/json","anthropic-dangerous-disable-cors": "true"},
-      body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:1000,system:getSystemPrompt(),messages:[{role:"user",content:question}]})
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({
+        system_instruction:{parts:[{text:getSystemPrompt()}]},
+        contents:[{parts:[{text:question}]}],
+        generationConfig:{maxOutputTokens:1000}
+      })
     });
     const data = await res.json();
-    const answer = data.content.map(b=>b.text||'').join('');
+    if(data.error){throw new Error(data.error.message);}
+    const answer = data.candidates[0].content.parts[0].text;
     box.innerHTML = '';
     const cursor = document.createElement('span');
     cursor.className = 'cursor-blink';
@@ -644,6 +654,8 @@ window.toggleDetail = async (uid) => {
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 function showToast(msg){const t=document.createElement('div');t.className='toast';t.textContent=msg;document.body.appendChild(t);setTimeout(()=>t.remove(),3000);}
 window.showToast=showToast;
+
+
 </script>
 </body>
 </html>
